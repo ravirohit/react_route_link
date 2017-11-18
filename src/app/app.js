@@ -34,7 +34,8 @@ export default class App extends React.Component{
                                             <Route exact path='/homepageupdate' component={HomepageUpdate} />
                                             <Route exact path='/login' component={Login} />
                                             <Route exact path='/redirect' component={Redirect} />
-                                            <Route component={Random} />                                    </Switch>
+                                            <Route component={Random} />                                    
+                                    </Switch>
                                 </div>
                                 <div className="col-sm-3"></div>
                             </div>
