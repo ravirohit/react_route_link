@@ -1,0 +1,31 @@
+
+--------------------------------- why Middleware ---------------------------------------------------
+-> Reducers must be synchronous. They return the new state. what happens when you need to throw some asynchronous behavior into the mix? 
+That's where the idea of middleware comes in.
+-> middleware can be asynchronous.
+-> Logging
+-> Error tracking
+-> Auth requests
+
+-------------------------------------------------------------------------------------------
+-> In Redux, a middleware is used to intercept dispatched actions before they make it to the reducer.
+-> You can apply multiple middleware to a Redux store, which means that the action will have to go through all the middleware before making it to the reducer.
+-> The order of execution is actually the order in which you pass the middleware to the store. Also, at any point in a middleware, you can chose to stop forwarding
+ the action, which will end the cycle.
+---------------------------------- Custom Middleware ------------------------------------------
+-> To define your own middleware, you need to write a function with the following signature: 
+   store => next => action => result
+   
+-> This looks very confusing at first glance - I hear you - so let’s break it down a little bit:
+---> store is the Redux store instance that will be passed to your middleware.
+---> next is a function that you need to call with an action when you want to continue the flow execution, which means passing the action to the next in line: either the following middleware or a reducer.
+---> action is the action that was originally dispatched so that you can access it, apply logic based on the action, and eventually pass it on using next.
+---> result is the value used as the result of the dispatch call.
+
+-------------------------------- Steps to create Middleware ---------------------------------
+-> const timerMiddleware = store => next => action => {
+    console.log("this is middleware:",action)
+     next(action);  // used to call the next middleware in the chain..(chain follow the sequence used in applyMiddleware());
+  };
+-> const middleware = applyMiddleware(timerMiddleware);
+-> export const store = createStore(combineReducers({userReducer}),middleware);

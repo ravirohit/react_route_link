@@ -54,6 +54,8 @@ Like:
      We create a copy with Object.assign(). Object.assign(state, { visibilityFilter: action.filter }) is also wrong: it will mutate the first argument. 
 	 You must supply an empty object as the first parameter. You can also enable the object spread operator proposal to write { ...state, ...newState } instead
 ---> We return the previous state in the default case. It's important to return the previous state for any unknown action.
+-> Reducers must be synchronous
+-> Because reducers should not modify global state, reducers should not use functions like setInterval()
 --------------------------------------------------------- Store -------------------------------------------------------------
 -> The Store is the object that brings them together. The store has the following responsibilities:
    a) Holds application state;
@@ -62,6 +64,14 @@ Like:
    d) Registers listeners via subscribe(listener);
    e) Handles unregistering of listeners via the function returned by subscribe(listener).
 -> It's important to note that you'll only have a single store in a Redux application.
+-> way to create store:
+  const store = redux.createStore(stopwatch);  // if we are having single reducer with name "stopwatch"
+  const reducers = combineReducers({
+				   todos,             //is reducer
+				   visibleTodoFilter  // is reducer
+				 })
+  const store = redux.createStore(reducers);  // in case of muliple reducer
+  
 
 ----------------------------------------------------------- React Redux Integration ---------------------------------------------------------------	
 -> Connecting React Components to Redux	: Connecting a React component to Redux allows the component to use the top-level store without having to pass 

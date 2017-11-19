@@ -21,7 +21,6 @@ const stateToprops=(state)=>{
 const dispatchToProps=(dispatch)=>{
   return{
     register:(thisRef)=>{
-      console.log("fun called:",thisRef.refs.name.value, ' thisRef.props:',thisRef.props);
       thisRef.props.user.push(thisRef.refs.name.value);
       dispatch({
         type:'NEW_USER_REG',
