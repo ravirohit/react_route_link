@@ -1,0 +1,120 @@
+Note:
+Note on Object.assign. ex:
+       Object.assign({}, state, {
+         visibilityFilter: action.filter
+       })
+Object.assign() is a part of ES6, and is not supported by older browsers. To support them, you will need to either use a polyfill,
+a Babel plugin, or a helper from another library like _.assign
+--------------------------------------------------- Why Redux -----------------------------------------------
+-> React: A JS library that helps us to divide up our app into multiple components
+-> Redux: A complimentary library to React that provides a way to easily keep the data(State) and the events(Actions).
+
+--------------------------------------------------- Redux Life Cycle -----------------------------------------
+->  Redux architecture revolves around a strict unidirectional data flow(Desing pattern is called flux).
+-> The data lifecycle in any Redux app follows these 4 steps:
+Step-1:
+    store.dispatch(action): An action is a plain object describing what happened. action is nothing but the current brief news with oject({type:'', payload:''})
+	                        You can call store.dispatch(action) from anywhere in your app, including components and XHR callbacks, or even at scheduled intervals. 
+Setp-2:
+    The Redux store calls the reducer function you gave it. The store will pass two arguments to the reducer: the current state tree and the action.
+	Note that a reducer is a pure function. It only computes the next state.
+Step-3:
+    The root reducer may combine the output of multiple reducers into a single state tree.
+	meaning is: 
+	let todoApp = combineReducers({
+				   todos,             //is reducer
+				   visibleTodoFilter  // is reducer
+				 })
+    will return something like:
+	When you emit an action, todoApp returned by combineReducers will call both reducers like:
+	  let nextTodos = todos(state.todos, action)
+      let nextVisibleTodoFilter = visibleTodoFilter(state.visibleTodoFilter, action)
+    It will then combine both sets of results into a single state tree:
+	  return {
+	    todos: nextTodos,
+		visibleTodoFilter: nextVisibleTodoFilter
+	  }
+Step-4:
+    The Redux store saves the complete state tree returned by the root reducer.
+    This new tree is now the next state of your app! Every listener registered with store.subscribe(listener) will now be invoked; 
+    listeners may call store.getState() to get the current state.
+-------------------------------------------------------- Actions -------------------------------------------
+-> Actions are payloads of information that send data from your application to your store. They are the only source of information for the store. 
+-> You send them to the store using store.dispatch().
+Like: 
+    {
+	  type: ADD_TODO,
+	  text: 'Build my first Redux app'
+    }
+-------------------------------------------------------- Reducers --------------------------------------------------------
+-> Actions describe the fact that something happened, but don't specify how the application's state changes in response. This is the job of reducers
+-> Given the same arguments, it should calculate the next state and return it. No surprises. No side effects. No API calls. No mutations. Just a calculation.
+-> Note:
+---> We don't mutate the state:
+     We create a copy with Object.assign(). Object.assign(state, { visibilityFilter: action.filter }) is also wrong: it will mutate the first argument. 
+	 You must supply an empty object as the first parameter. You can also enable the object spread operator proposal to write { ...state, ...newState } instead
+---> We return the previous state in the default case. It's important to return the previous state for any unknown action.
+--------------------------------------------------------- Store -------------------------------------------------------------
+-> The Store is the object that brings them together. The store has the following responsibilities:
+   a) Holds application state;
+   b) Allows access to state via getState();
+   c) Allows state to be updated via dispatch(action);
+   d) Registers listeners via subscribe(listener);
+   e) Handles unregistering of listeners via the function returned by subscribe(listener).
+-> It's important to note that you'll only have a single store in a Redux application.
+
+----------------------------------------------------------- React Redux Integration ---------------------------------------------------------------	
+-> Connecting React Components to Redux	: Connecting a React component to Redux allows the component to use the top-level store without having to pass 
+the store down as a prop through  its parent components.
+-> To start connecting components, we have to wrap our root component in Provider, a special React Redux component, and pass it the store variable.
+						ReactDOM.render(
+						  <Provider store={store}>
+							<CommentBox />
+						  </Provider>,
+						  document.getElementById('content')
+						);
+-> Now Store is available to all the react component but it doesnt mean, Store is connected to all the component. If we want to connect the require 
+component to the store to make it accessible, we have to use followng Steps in the component:
+
+First, mapping state to props:
+	const stateToprops=(state)=>{      // we can access the 'user' in our component using this.props.user. this is particulary for the read operation from store.
+	  return {
+		user:state.userReducer
+	  }
+	}
+	const dispatchToProps=(dispatch)=>{  // we can access the 'register' in our component using this.props.register and emit the event to update/write state in store.
+	  return{
+		register:(thisRef)=>{
+		  console.log("fun called:",thisRef.refs.name.value, ' thisRef.props:',thisRef.props);
+		  thisRef.props.user.push(thisRef.refs.name.value);
+		  dispatch({
+			type:'NEW_USER_REG',
+			payload: thisRef.props.user
+		  });
+		  thisRef.refs.name.value = '';
+		}
+	  }
+	}
+export default connect(stateToprops,dispatchToProps)(Homepage);    //connecting the Homepage Component to the Store
+
+Note: whenever we update the store, the connected component's componentWillReceiveProps() method get called and their we can use setState() to re-render() comp.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
